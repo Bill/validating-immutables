@@ -79,7 +79,7 @@ public class ImmutableConstructionValidationTest {
 
     @Test
     public void testFromStringlyTypedToTypedErrors() {
-        Validation<String, Person> allValidation =
+        final Validation<String, Person> allValidation =
                 constructPerson("111-2x-3333", "");
 
         assertThat("validation errors were missed",allValidation.isInvalid(),is(true));
@@ -89,7 +89,7 @@ public class ImmutableConstructionValidationTest {
 
     @Test
     public void testFromStringlyTypedToTypedGood() {
-        Validation<String, Person> allValidation =
+        final Validation<String, Person> allValidation =
                 constructPerson("111-22-3333", "anything-16");
 
         assertThat("valid args resulted in errors", allValidation.isValid(),is(true));
@@ -110,8 +110,8 @@ public class ImmutableConstructionValidationTest {
          Build the primitives
          */
 
-        Validation<String,SSN> ssnv = SSN.toValidation(ImmutableSSN.builder().ssn(ssnString));
-        Validation<String,ID> idv = ID.toValidation(ImmutableID.builder().id(idString));
+        final Validation<String,SSN> ssnv = SSN.toValidation(ImmutableSSN.builder().ssn(ssnString));
+        final Validation<String,ID> idv = ID.toValidation(ImmutableID.builder().id(idString));
 
         /*
          Build the entity
