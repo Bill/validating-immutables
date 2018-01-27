@@ -119,8 +119,8 @@ public class ImmutableConstructionValidationTest {
 
         final ImmutablePerson.Builder builder =
                 ImmutablePerson.builder().firstName("Lucy").lastName("Ricardo").age(20);
-        ssnv.map(ssn->builder.setValueSsn(ssn));
-        idv.map(id->builder.setValueId(id));
+        ssnv.peek(ssn->builder.setValueSsn(ssn));
+        idv.peek(id->builder.setValueId(id));
         final Validation<String,Person> pv = Person.toValidation(builder);
 
         /*
