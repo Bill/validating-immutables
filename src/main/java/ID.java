@@ -17,10 +17,6 @@ abstract class ID {
         return id();
     }
 
-    public static Validation<String,ID> create(final String content) {
-        return getValidation(content).map(ID::construct);
-    }
-
     @Value.Check
     protected ID check() {
         return getValidation(id())
@@ -35,15 +31,7 @@ abstract class ID {
         return Validations.notBlank(id, "ID");
     }
 
-    private static ID construct(final String content) {
-        return Try.of(()-> {
-                final Constructor constructor = ImmutableID.class.getDeclaredConstructor(String.class);
-                constructor.setAccessible(true);
-                return (ID)constructor.newInstance(content);
-            }).get(); // re-raise checked exceptions as unchecked ones yay
-    }
-
-    // FIXME
+    // FIXME: see https://github.com/immutables/immutables/issues/451
     static Validation<String,ID> toValidation(final ImmutableID.Builder builder) {
         final Either<? extends Throwable,ID> pe = Try.of(()->(ID)builder.build()).toEither();
         return pe.isLeft() ? Validation.invalid(pe.getLeft().getMessage()) : Validation.valid(pe.get());

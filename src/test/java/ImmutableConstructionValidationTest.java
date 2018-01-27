@@ -110,9 +110,8 @@ public class ImmutableConstructionValidationTest {
          Build the primitives
          */
 
-        Validation<String,SSN> ssnv = SSN.create(ssnString);
-//        Validation<String,ID> idv = ID.create(badIDString);
-         Validation<String,ID> idv = ID.toValidation(ImmutableID.builder().id(idString));
+        Validation<String,SSN> ssnv = SSN.toValidation(ImmutableSSN.builder().ssn(ssnString));
+        Validation<String,ID> idv = ID.toValidation(ImmutableID.builder().id(idString));
 
         /*
          Build the entity

@@ -3,6 +3,7 @@ import java.util.regex.Pattern;
 
 import org.immutables.value.Value;
 
+import io.vavr.control.Either;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
 
@@ -15,10 +16,6 @@ abstract class SSN {
 
     public String toString() {
         return ssn();
-    }
-
-    public static Validation<String,SSN> create(final String content) {
-        return getValidation(content).map(SSN::construct);
     }
 
     @Value.Check
@@ -38,12 +35,10 @@ abstract class SSN {
                           .mapError(Validations::combineErrors);
     }
 
-    private static SSN construct(final String content) {
-        return Try.of(()-> {
-            final Constructor constructor = ImmutableSSN.class.getDeclaredConstructor(String.class);
-            constructor.setAccessible(true);
-            return (SSN)constructor.newInstance(content);
-        }).get(); // re-raise checked exceptions as unchecked ones yay
+    // FIXME: see https://github.com/immutables/immutables/issues/451
+    static Validation<String,SSN> toValidation(final ImmutableSSN.Builder builder) {
+        final Either<? extends Throwable,SSN> pe = Try.of(()->(SSN)builder.build()).toEither();
+        return pe.isLeft() ? Validation.invalid(pe.getLeft().getMessage()) : Validation.valid(pe.get());
     }
 
 }

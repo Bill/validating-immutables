@@ -4,50 +4,46 @@ This project shows how you might use these together. It defines an entity class,
 
 These classes make use of immutables.io `@Value.Check` annotation to define check methods for each class. Immutables.io calls these "normalizing" check methods because these return the target object (as opposed to `void`).
 
-What I was after, was the ability to construct an object of type `T` and get back `Validation<String,T>`. In the case of the simple classes like `SSN` and `ID` this took the from of a user-defined factory method e.g.
+What I was after, was the ability to construct an object of type `T` and get back `Validation<String,T>`. The pattern I established is as follows:
+
+Put the validation code for your immutable, in a (normalizing) check method, pretty much as usual. The wrinkle here, is that this check method is delegating to another method, one that returns a `Validation`. That other method does all the actual validation.
+
+Here is an example from the `SSN` class:
 
 ```java
-    public static Validation<String,SSN> create(final String content) {
-        return getValidation(content).map(SSN::construct);
-    }
+@Value.Check
+protected SSN check() {
+    return getValidation(ssn())
+            .map(x->this)
+            // toEither().getOrElseThrow() is required because https://github.com/vavr-io/vavr/issues/2207
+            .toEither()
+            // can't use method reference here: compiler (or at least IntelliJ) finds it ambiguous
+            .getOrElseThrow(errors->new IllegalStateException(errors));
+}
 ```
 
-That method calls a custom per-class method to get the validation:
+Here's the method that does the actual validation for `SSN`:
 
 ```java
-    private static Validation<String, String> getValidation(final String id) {
-        return Validations.notBlank(id, "ID");
-    }
+
+private static Validation<String, String> getValidation(final String content) {
+    return Validations.notBlank(content, "SSN")
+                      .combine(Validations.matches(content,"SSN", pattern))
+                      .ap((ssn1,ssn2)->ssn1)
+                      .mapError(Validations::combineErrors);
+}
 ```
 
-Note that the hand-crafted check method that the builder will call also leverages that validation:
+Finally, to construct the object and get back a validation object (which might contain one or more errors), you use the builder and pass it to a utility method:
 
 ```java
-    @Value.Check
-    protected ID check() {
-        return getValidation(id())
-                .map(id->this)
-                // toEither().getOrElseThrow() is required because https://github.com/vavr-io/vavr/issues/2207
-                .toEither()
-                // can't use method reference here: compiler (or at least IntelliJ) finds it ambiguous
-                .getOrElseThrow(errors->new IllegalStateException(errors));
-    }
+final Validation<String,SSN> ssnv = SSN.toValidation(ImmutableSSN.builder().ssn("111-2p-3333"));
+assertThat(ssnv.isInvalid(),is(true));
+assertThat(ssnv.getError(),is("SSN string '111-2p-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'."));
 ```
 
-And finally, I defined a "back door" construction method to skirt around immutables.io construction+checking:
+Constructing entity objects (with many attributes) and also two-phase construction: constructing simple objects from strings and then constructing entity objects from those simple objects, is demonstrated in the tests.
 
-```java
-    private static SSN construct(final String content) {
-        return Try.of(()-> {
-            final Constructor constructor = ImmutableSSN.class.getDeclaredConstructor(String.class);
-            constructor.setAccessible(true);
-            return (SSN)constructor.newInstance(content);
-        }).get(); // re-raise checked exceptions as unchecked ones yay
-    }
-```
+This approach looks like it could be useful for constructing domain objects from e.g. web requests. Unlike the Rails approach of storing errors directly in your domain (`ActiveRecord`) objects, this approach keeps the errors completely separate. The value of that is that your domain objects can enforce constraints internally. Which was the whole point, wasn't it?
 
-This wasn't too awful, since simple classes like `SSN` had only one attribute. For complex classes like `Person` you really need to be able to construct through the generated builder. In that case it didn't make sense to define that static factory method since there would be simply too many combinations.
- 
- and if it represents an error, I'd like it to throw an exception carrying the `Validation.Error.error` content, somehow.
-
-Hillarity ensues. See [vavr issue #2207](https://github.com/vavr-io/vavr/issues/2207)
+To make this work, I had to define a `toValidation(some-target-class.Builder)` method on each target class. It would have been real nice if Immutables.io provided a way for me to put such a method right on the generated builder (given my validation method). See [immutables.io issue #451](https://github.com/immutables/immutables/issues/451) for the discussion and my proposal. 

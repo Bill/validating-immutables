@@ -3,6 +3,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import io.vavr.collection.Seq;
+import io.vavr.control.Either;
+import io.vavr.control.Try;
 import io.vavr.control.Validation;
 
 public class Validations {
@@ -27,4 +29,5 @@ public class Validations {
     public static String combineErrors(final Seq<String> errors) {
         return errors.mkString(" ");
     }
+
 }
