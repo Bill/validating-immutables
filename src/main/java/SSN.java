@@ -26,6 +26,10 @@ abstract class SSN {
                 .getOrElseThrow(errors->new IllegalStateException(errors));
     }
 
+    /*
+     In https://github.com/immutables/immutables/issues/451 I propose
+     @Value.Validate to generate a buildValidation() on the generated Builder class
+     */
     private Validation<String,SSN> validate() {
         final String content = ssn();
         return Validations.notBlank(content, "SSN")
@@ -34,8 +38,12 @@ abstract class SSN {
                           .mapError(Validations::combineErrors);
     }
 
-    // FIXME: see https://github.com/immutables/immutables/issues/451
-    static Validation<String,SSN> toValidation(final ImmutableSSN.Builder builder) {
+    /*
+     This method would get generated on the Builder class under my proposal.
+     In that case it wouldn't need to unpack the exception like this because check()
+     would be avoided
+     */
+    static Validation<String,SSN> buildValidation(final ImmutableSSN.Builder builder) {
         final Either<? extends Throwable,SSN> pe = Try.of(()->(SSN)builder.build()).toEither();
         return pe.isLeft() ? Validation.invalid(pe.getLeft().getMessage()) : Validation.valid(pe.get());
     }

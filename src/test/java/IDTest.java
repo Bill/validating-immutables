@@ -30,13 +30,13 @@ public class IDTest {
     }
     @Test
     public void testFactoryConstructionGood() {
-        final Validation<String,ID> idv = ID.toValidation(ImmutableID.builder().id("hi"));
+        final Validation<String,ID> idv = ID.buildValidation(ImmutableID.builder().id("hi"));
         assertThat(idv.isValid(),is(true));
         assertThat(idv.get().toString(),is("hi"));
     }
     @Test
     public void testFactoryConstructionBad() {
-        final Validation<String,ID> idv = ID.toValidation(ImmutableID.builder().id(""));
+        final Validation<String,ID> idv = ID.buildValidation(ImmutableID.builder().id(""));
         assertThat(idv.isInvalid(),is(true));
         assertThat(idv.getError(),is("ID is blank: must not be blank."));
     }

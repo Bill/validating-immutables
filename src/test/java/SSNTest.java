@@ -25,13 +25,13 @@ public class SSNTest {
 
     @Test
     public void testFactoryConstructionGood() {
-        final Validation<String,SSN> ssnv = SSN.toValidation(ImmutableSSN.builder().ssn("111-22-3333"));
+        final Validation<String,SSN> ssnv = SSN.buildValidation(ImmutableSSN.builder().ssn("111-22-3333"));
         assertThat(ssnv.isValid(),is(true));
         assertThat(ssnv.get().toString(),is("111-22-3333"));
     }
     @Test
     public void testFactoryConstructionBad() {
-        final Validation<String,SSN> ssnv = SSN.toValidation(ImmutableSSN.builder().ssn("111-2p-3333"));
+        final Validation<String,SSN> ssnv = SSN.buildValidation(ImmutableSSN.builder().ssn("111-2p-3333"));
         assertThat(ssnv.isInvalid(),is(true));
         assertThat(ssnv.getError(),is("SSN string '111-2p-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'."));
     }

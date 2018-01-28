@@ -110,8 +110,8 @@ public class ImmutableConstructionValidationTest {
          Build the primitives
          */
 
-        final Validation<String,SSN> ssnv = SSN.toValidation(ImmutableSSN.builder().ssn(ssnString));
-        final Validation<String,ID> idv = ID.toValidation(ImmutableID.builder().id(idString));
+        final Validation<String,SSN> ssnv = SSN.buildValidation(ImmutableSSN.builder().ssn(ssnString));
+        final Validation<String,ID> idv = ID.buildValidation(ImmutableID.builder().id(idString));
 
         /*
          Build the entity
@@ -121,7 +121,7 @@ public class ImmutableConstructionValidationTest {
                 ImmutablePerson.builder().firstName("Lucy").lastName("Ricardo").age(20);
         ssnv.peek(ssn->builder.setValueSsn(ssn));
         idv.peek(id->builder.setValueId(id));
-        final Validation<String,Person> pv = Person.toValidation(builder);
+        final Validation<String,Person> pv = Person.buildValidation(builder);
 
         /*
          Capture all errors

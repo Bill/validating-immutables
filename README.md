@@ -37,7 +37,7 @@ private static Validation<String, String> getValidation(final String content) {
 Finally, to construct the object and get back a validation object (which might contain one or more errors), you use the builder and pass it to a utility method:
 
 ```java
-final Validation<String,SSN> ssnv = SSN.toValidation(ImmutableSSN.builder().ssn("111-2p-3333"));
+final Validation<String,SSN> ssnv = buildValidation(ImmutableSSN.builder().ssn("111-2p-3333"));
 assertThat(ssnv.isInvalid(),is(true));
 assertThat(ssnv.getError(),is("SSN string '111-2p-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'."));
 ```

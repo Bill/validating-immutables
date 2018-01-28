@@ -35,6 +35,10 @@ public abstract class Person {
                 .getOrElseThrow(errors->new IllegalStateException(errors));
     }
 
+    /*
+     In https://github.com/immutables/immutables/issues/451 I propose
+     @Value.Validate to generate a buildValidation() on the generated Builder class
+     */
     private Validation<String, Person> validate() {
         return Validation.combine(
                 nameValidation(name(), "name"),
@@ -51,16 +55,11 @@ public abstract class Person {
     }
 
     /*
-     FIXME: builder should have a method that returns Validation<String,Person>, similar to the
-            create() method we hand-crafted on SSN and ID. In the case of SSN and ID it was ok
-            to put the method on the target class instead of the builder because those classes
-            were "simple" (only one attribute each). No builder is ever used on those. Entity
-            classes really need their builders, and it'd be really nice if those builders could
-            produce validations.
-
-            See Immutables.io ticket: https://github.com/immutables/immutables/issues/451
+     This method would get generated on the Builder class under my proposal.
+     In that case it wouldn't need to unpack the exception like this because check()
+     would be avoided
      */
-    static Validation<String,Person> toValidation(final ImmutablePerson.Builder builder) {
+    static Validation<String,Person> buildValidation(final ImmutablePerson.Builder builder) {
         // go through whole construction and check() process and raise any exception
         final Either<? extends Throwable,Person> pe = Try.of(()->(Person)builder.build()).toEither();
         /*

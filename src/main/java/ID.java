@@ -23,12 +23,20 @@ abstract class ID {
                 .getOrElseThrow(errors->new IllegalStateException(errors));
     }
 
+    /*
+     In https://github.com/immutables/immutables/issues/451 I propose
+     @Value.Validate to generate a buildValidation() on the generated Builder class
+     */
     private Validation<String, ID> validate() {
         return Validations.notBlank(id(), "ID").map(id->this);
     }
 
-    // FIXME: see https://github.com/immutables/immutables/issues/451
-    static Validation<String,ID> toValidation(final ImmutableID.Builder builder) {
+    /*
+     This method would get generated on the Builder class under my proposal.
+     In that case it wouldn't need to unpack the exception like this because check()
+     would be avoided
+     */
+    static Validation<String,ID> buildValidation(final ImmutableID.Builder builder) {
         final Either<? extends Throwable,ID> pe = Try.of(()->(ID)builder.build()).toEither();
         return pe.isLeft() ? Validation.invalid(pe.getLeft().getMessage()) : Validation.valid(pe.get());
     }
