@@ -1,4 +1,3 @@
-import java.lang.reflect.Constructor;
 import java.util.regex.Pattern;
 
 import org.immutables.value.Value;
@@ -20,18 +19,18 @@ abstract class SSN {
 
     @Value.Check
     protected SSN check() {
-        return getValidation(ssn())
-                .map(x->this)
+        return validate()
                 // toEither().getOrElseThrow() is required because https://github.com/vavr-io/vavr/issues/2207
                 .toEither()
                 // can't use method reference here: compiler (or at least IntelliJ) finds it ambiguous
                 .getOrElseThrow(errors->new IllegalStateException(errors));
     }
 
-    private static Validation<String, String> getValidation(final String content) {
+    private Validation<String,SSN> validate() {
+        final String content = ssn();
         return Validations.notBlank(content, "SSN")
                           .combine(Validations.matches(content,"SSN", pattern))
-                          .ap((ssn1,ssn2)->ssn1)
+                          .ap((ssn1,ssn2)->this)
                           .mapError(Validations::combineErrors);
     }
 

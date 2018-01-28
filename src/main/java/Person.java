@@ -29,24 +29,24 @@ public abstract class Person {
 
     @Value.Check
     protected Person check() {
-        return getValidation()
+        return validate()
                 // toEither().getOrElseThrow() is required because https://github.com/vavr-io/vavr/issues/2207
                 .toEither()
                 .getOrElseThrow(errors->new IllegalStateException(errors));
     }
 
-    private Validation<String, Person> getValidation() {
+    private Validation<String, Person> validate() {
         return Validation.combine(
                 nameValidation(name(), "name"),
                 adultsRequireSSN(ssn(), "ssn", age()))
-                         .ap((nameIgnored, ssnoIgnored) -> {
+                         .ap((nameIgnored, ssnoIgnored) ->
                              /*
                               name is a derived property so we don't actually need to set it (it's already set)
                               return ImmutablePerson.copyOf(this).withName(name);
                               adultsRequireSSN() won't change SSN
                               */
-                             return this;
-                         })
+                             this
+                         )
                          .mapError(Validations::combineErrors);
     }
 

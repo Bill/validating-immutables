@@ -1,6 +1,3 @@
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-
 import org.immutables.value.Value;
 
 import io.vavr.control.Either;
@@ -19,16 +16,15 @@ abstract class ID {
 
     @Value.Check
     protected ID check() {
-        return getValidation(id())
-                .map(id->this)
+        return validate()
                 // toEither().getOrElseThrow() is required because https://github.com/vavr-io/vavr/issues/2207
                 .toEither()
                 // can't use method reference here: compiler (or at least IntelliJ) finds it ambiguous
                 .getOrElseThrow(errors->new IllegalStateException(errors));
     }
 
-    private static Validation<String, String> getValidation(final String id) {
-        return Validations.notBlank(id, "ID");
+    private Validation<String, ID> validate() {
+        return Validations.notBlank(id(), "ID").map(id->this);
     }
 
     // FIXME: see https://github.com/immutables/immutables/issues/451
