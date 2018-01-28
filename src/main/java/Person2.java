@@ -28,6 +28,10 @@ public class Person2 {
      */
     public String name() { return firstName() + " " + lastName();}
 
+    /*
+     private most-general constructor
+     It performs no validation!
+     */
     Person2(final Optional<ID> id,
             final String firstName,
             final String lastName,
@@ -40,6 +44,9 @@ public class Person2 {
         this.ssn = ssn;
     }
 
+    /*
+     This is the way to construct. It constructs an un-validated object and then returns the validation for it.
+     */
     @Builder.Factory
     public static Validation<String,Person2>
     person2Validation(final Optional<ID> id,

@@ -165,6 +165,7 @@ public class ImmutableConstructionValidationTest {
         return Person.buildValidation(builder);
     }
 
+    // Here we build a Person2 just to see what things might look like using a factory builder instead of an ImmutablePerson
     private static Validation<String, Person2> createPerson2Validation(
             final Validation<String, SSN> ssnv,
             final Validation<String, ID> idv) {
