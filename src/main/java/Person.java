@@ -69,7 +69,7 @@ public abstract class Person {
         return pe.isLeft() ? Validation.invalid(pe.getLeft().getMessage()) : Validation.valid(pe.get());
     }
 
-    private static Validation<String,String> nameValidation(final String name, final String parameterName) {
+    /*private*/ static Validation<String,String> nameValidation(final String name, final String parameterName) {
         return Validations.notBlank(name, "name").combine(
                 Validations.maximumLength(name, "name", 16))
                           .ap((n1,n2)->n1)
