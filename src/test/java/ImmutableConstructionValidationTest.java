@@ -171,7 +171,7 @@ public class ImmutableConstructionValidationTest {
             final Validation<String, ID> idv) {
         final Person2ValidationBuilder builder =
                 new Person2ValidationBuilder().firstName("Lucy").lastName("Ricardo").age(20);
-        // hmm… apparently vavr-encodings doesn't know how to doctor up factory builders to work with validations
+        // hmm… apparently vavr-encodings doesn't know how to doctor up factory builders to work with vavr Option
         ssnv.peek(ssn -> builder.ssn(Optional.of(ssn)));
         idv.peek(id -> builder.id(Optional.of(id)));
         return builder.build();
