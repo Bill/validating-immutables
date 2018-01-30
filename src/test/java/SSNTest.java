@@ -20,7 +20,7 @@ public class SSNTest {
         final Try<SSN> ssnt = Try.of(()->ImmutableSSN.of("111-2p-3333"));
         assertThat(ssnt.isFailure(),is(true));
         assertThat(ssnt.getCause(),is(instanceOf(IllegalStateException.class)));
-        assertThat(ssnt.getCause().getMessage(),is("SSN string '111-2p-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'."));
+        assertThat(ssnt.getCause().getMessage(),is("'SSN' parameter containing string '111-2p-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'."));
     }
 
     @Test
@@ -33,7 +33,7 @@ public class SSNTest {
     public void testFactoryConstructionBad() {
         final Validation<String,SSN> ssnv = SSN.buildValidation(ImmutableSSN.builder().ssn("111-2p-3333"));
         assertThat(ssnv.isInvalid(),is(true));
-        assertThat(ssnv.getError(),is("SSN string '111-2p-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'."));
+        assertThat(ssnv.getError(),is("'SSN' parameter containing string '111-2p-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'."));
     }
 
 }

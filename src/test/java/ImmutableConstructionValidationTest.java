@@ -33,7 +33,7 @@ public class ImmutableConstructionValidationTest {
         final Try<Person> pt = Try.of(() -> builder.build());
         assertThat(pt.isFailure(),is(true));
         assertThat(pt.getCause(),is(instanceOf(IllegalStateException.class)));
-        assertThat(pt.getCause().getMessage(),is("30 character name is too long: violates maximum name length of 16 characters."));
+        assertThat(pt.getCause().getMessage(),is("30 character name is too long: exceeds maximum name length of 16 characters."));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ImmutableConstructionValidationTest {
         final Try<Person> pt = Try.of(() -> builder.build());
         assertThat(pt.isFailure(),is(true));
         assertThat(pt.getCause(),is(instanceOf(IllegalStateException.class)));
-        assertThat(pt.getCause().getMessage(),is("30 character name is too long: violates maximum name length of 16 characters. 20-year-old has no SSN (in 'ssn' parameter): violates SSN required if age > 17 years."));
+        assertThat(pt.getCause().getMessage(),is("30 character name is too long: exceeds maximum name length of 16 characters. 20-year-old has no SSN (in 'ssn' parameter): violates SSN required if age > 17 years."));
 
     }
 
@@ -88,7 +88,7 @@ public class ImmutableConstructionValidationTest {
 
         assertThat("validation errors were missed",allValidation.isInvalid(),is(true));
         assertThat("errors content is incomplete",allValidation.getError(),
-                   is("SSN string '111-2x-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'. ID is blank: must not be blank. 20-year-old has no SSN (in 'ssn' parameter): violates SSN required if age > 17 years."));
+                   is("'SSN' parameter containing string '111-2x-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'. ID is blank: must not be blank. 20-year-old has no SSN (in 'ssn' parameter): violates SSN required if age > 17 years."));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class ImmutableConstructionValidationTest {
 
         assertThat("validation errors were missed",allValidation.isInvalid(),is(true));
         assertThat("errors content is incomplete",allValidation.getError(),
-                   is("SSN string '111-2x-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'. ID is blank: must not be blank. 20-year-old has no SSN (in 'ssn' parameter): violates SSN required if age > 17 years."));
+                   is("'SSN' parameter containing string '111-2x-3333' doesn't match pattern '\\d{3}+-\\d{2}+-\\d{4}+'. ID is blank: must not be blank. 20-year-old has no SSN (in 'ssn' parameter): violates SSN required if age > 17 years."));
     }
 
     @Test

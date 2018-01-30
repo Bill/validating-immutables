@@ -2,6 +2,7 @@ import java.util.Optional;
 
 import org.immutables.builder.Builder;
 
+import io.vavr.Function1;
 import io.vavr.control.Validation;
 
 public class Person2 {
